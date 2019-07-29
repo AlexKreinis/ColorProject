@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ColorBox from './ColorBox.js';
 import '../css/Palette.css';
 import Navbar from './Navbar.js';
+import Footer from './Footer.js';
+
 export class Palette extends Component {
   state = {
     level: 500,
@@ -9,9 +11,17 @@ export class Palette extends Component {
   };
   makingColors = () => {
     const { level, format } = this.state;
+    const { id } = this.props.palette;
     return this.props.palette.colors[level].map(color => {
       return (
-        <ColorBox background={color[format]} name={color.name} key={color.id} />
+        <ColorBox
+          background={color[format]}
+          name={color.name}
+          key={color.id}
+          id={color.id}
+          paletteId={id}
+          showLink={true}
+        />
       );
     });
   };
@@ -31,12 +41,10 @@ export class Palette extends Component {
           level={level}
           changeLevel={this.changeLevel}
           handleChange={this.changeFormat}
+          showingSlider={true}
         />
         <div className="Palette-colors"> {colorBoxes}</div>
-        <footer className="Palette-footer">
-          {paletteName}
-          <span className="emoji">{emoji}</span>
-        </footer>
+        <Footer paletteName={paletteName} emoji={emoji} />
       </div>
     );
   }
