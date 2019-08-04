@@ -1,28 +1,29 @@
-import React, { Component } from 'react';
-import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { ChromePicker } from 'react-color';
-import Button from '@material-ui/core/Button';
-import DraggableColorBox from './DraggableColorBox';
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import React, { Component } from "react";
+import classNames from "classnames";
+import { withStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import { ChromePicker } from "react-color";
+import Button from "@material-ui/core/Button";
+import DraggableColorList from "./DragableColorList";
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
+import { arrayMove } from "react-sortable-hoc";
 
 const drawerWidth = 400;
 
 const styles = theme => ({
   root: {
-    display: 'flex'
+    display: "flex"
   },
   appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     })
@@ -30,7 +31,7 @@ const styles = theme => ({
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     })
@@ -40,7 +41,7 @@ const styles = theme => ({
     marginRight: 20
   },
   hide: {
-    display: 'none'
+    display: "none"
   },
   drawer: {
     width: drawerWidth,
@@ -50,24 +51,24 @@ const styles = theme => ({
     width: drawerWidth
   },
   drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 8px',
+    display: "flex",
+    alignItems: "center",
+    padding: "0 8px",
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-end'
+    justifyContent: "flex-end"
   },
   content: {
     flexGrow: 1,
-    height: 'calc(100vh - 64px)',
+    height: "calc(100vh - 64px)",
     padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
     marginLeft: -drawerWidth
   },
   contentShift: {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     }),
@@ -78,24 +79,24 @@ const styles = theme => ({
 export class NewPaletteForm extends Component {
   state = {
     open: false,
-    currentColor: 'teal',
+    currentColor: "teal",
     colors: [],
-    newColorName: '',
-    newPaletteName: ''
+    newColorName: "",
+    newPaletteName: ""
   };
 
   componentDidMount() {
-    ValidatorForm.addValidationRule('isColorNameUnique', value =>
+    ValidatorForm.addValidationRule("isColorNameUnique", value =>
       this.state.colors.every(
         ({ name }) => name.toLowerCase() !== value.toLowerCase()
       )
     );
 
-    ValidatorForm.addValidationRule('isColorUnique', value =>
+    ValidatorForm.addValidationRule("isColorUnique", value =>
       this.state.colors.every(({ color }) => color !== this.state.currentColor)
     );
 
-    ValidatorForm.addValidationRule('isPaletteNameUnique', value =>
+    ValidatorForm.addValidationRule("isPaletteNameUnique", value =>
       this.props.palettes.every(
         ({ paletteName }) => paletteName.toLowerCase() !== value.toLowerCase()
       )
@@ -121,23 +122,13 @@ export class NewPaletteForm extends Component {
     };
     this.setState({
       colors: [...this.state.colors, newColor],
-      newColorName: ''
+      newColorName: ""
     });
   };
   deletePalette = name => {
     this.setState(currState => ({
       colors: currState.colors.filter(color => color.name !== name)
     }));
-  };
-  makeDragableBoxes = () => {
-    return this.state.colors.map(color => (
-      <DraggableColorBox
-        key={color.name}
-        color={color.color}
-        name={color.name}
-        handleClick={this.deletePalette}
-      />
-    ));
   };
 
   handleChange = e => {
@@ -148,16 +139,21 @@ export class NewPaletteForm extends Component {
     let newName = this.state.newPaletteName;
     const newPalette = {
       paletteName: newName,
-      id: newName.toLowerCase().replace(/ /g, '-'),
+      id: newName.toLowerCase().replace(/ /g, "-"),
       colors: this.state.colors
     };
     this.props.savePalette(newPalette);
-    this.props.history.push('/');
+    this.props.history.push("/");
+  };
+
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    this.setState(({ colors }) => ({
+      colors: arrayMove(colors, oldIndex, newIndex)
+    }));
   };
   render() {
     const { classes } = this.props;
-    const { open, currentColor } = this.state;
-    const DragableBoxes = this.makeDragableBoxes();
+    const { open, currentColor, colors } = this.state;
 
     return (
       <div className={classes.root}>
@@ -187,8 +183,8 @@ export class NewPaletteForm extends Component {
                 value={this.state.newPaletteName}
                 label="Palette Name"
                 onChange={this.handleChange}
-                validators={['required', 'isPaletteNameUnique']}
-                errorMessages={['enter palette name', 'Name allready taken']}
+                validators={["required", "isPaletteNameUnique"]}
+                errorMessages={["enter palette name", "Name allready taken"]}
               />
               <Button variant="contained" color="primary" type="submit">
                 Save Palette
@@ -231,11 +227,11 @@ export class NewPaletteForm extends Component {
               value={this.state.newColorName}
               name="newColorName"
               onChange={this.handleChange}
-              validators={['required', 'isColorNameUnique', 'isColorUnique']}
+              validators={["required", "isColorNameUnique", "isColorUnique"]}
               errorMessages={[
-                'This field is required',
-                'Color name is allready taken',
-                'This color has allready been used'
+                "This field is required",
+                "Color name is allready taken",
+                "This color has allready been used"
               ]}
             />
             <Button
@@ -255,7 +251,12 @@ export class NewPaletteForm extends Component {
           })}
         >
           <div className={classes.drawerHeader} />
-          {DragableBoxes}
+          <DraggableColorList
+            colors={colors}
+            removeColor={this.deletePalette}
+            axis="xy"
+            onSortEnd={this.onSortEnd}
+          />
         </main>
       </div>
     );
