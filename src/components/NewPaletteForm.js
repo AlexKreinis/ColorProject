@@ -59,7 +59,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     height: 'calc(100vh - 64px)',
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -80,7 +80,8 @@ export class NewPaletteForm extends Component {
     open: false,
     currentColor: 'teal',
     colors: [],
-    newName: ''
+    newColorName: '',
+    newPaletteName: ''
   };
 
   componentDidMount() {
@@ -92,6 +93,12 @@ export class NewPaletteForm extends Component {
 
     ValidatorForm.addValidationRule('isColorUnique', value =>
       this.state.colors.every(({ color }) => color !== this.state.currentColor)
+    );
+
+    ValidatorForm.addValidationRule('isPaletteNameUnique', value =>
+      this.props.palettes.every(
+        ({ paletteName }) => paletteName.toLowerCase() !== value.toLowerCase()
+      )
     );
   }
 
@@ -110,17 +117,42 @@ export class NewPaletteForm extends Component {
   addNewColor = () => {
     const newColor = {
       color: this.state.currentColor,
-      name: this.state.newName
+      name: this.state.newColorName
     };
-    this.setState({ colors: [...this.state.colors, newColor], newName: '' });
+    this.setState({
+      colors: [...this.state.colors, newColor],
+      newColorName: ''
+    });
+  };
+  deletePalette = name => {
+    this.setState(currState => ({
+      colors: currState.colors.filter(color => color.name !== name)
+    }));
   };
   makeDragableBoxes = () => {
     return this.state.colors.map(color => (
-      <DraggableColorBox color={color.color} name={color.name} />
+      <DraggableColorBox
+        key={color.name}
+        color={color.color}
+        name={color.name}
+        handleClick={this.deletePalette}
+      />
     ));
   };
+
   handleChange = e => {
-    this.setState({ newName: e.target.value });
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  savePalette = () => {
+    let newName = this.state.newPaletteName;
+    const newPalette = {
+      paletteName: newName,
+      id: newName.toLowerCase().replace(/ /g, '-'),
+      colors: this.state.colors
+    };
+    this.props.savePalette(newPalette);
+    this.props.history.push('/');
   };
   render() {
     const { classes } = this.props;
@@ -131,6 +163,7 @@ export class NewPaletteForm extends Component {
       <div className={classes.root}>
         <CssBaseline />
         <AppBar
+          color="default"
           position="fixed"
           className={classNames(classes.appBar, {
             [classes.appBarShift]: open
@@ -146,8 +179,21 @@ export class NewPaletteForm extends Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" noWrap>
-              Shop
+              Make a new Palette
             </Typography>
+            <ValidatorForm onSubmit={this.savePalette}>
+              <TextValidator
+                name="newPaletteName"
+                value={this.state.newPaletteName}
+                label="Palette Name"
+                onChange={this.handleChange}
+                validators={['required', 'isPaletteNameUnique']}
+                errorMessages={['enter palette name', 'Name allready taken']}
+              />
+              <Button variant="contained" color="primary" type="submit">
+                Save Palette
+              </Button>
+            </ValidatorForm>
           </Toolbar>
         </AppBar>
 
@@ -182,7 +228,8 @@ export class NewPaletteForm extends Component {
 
           <ValidatorForm onSubmit={this.addNewColor}>
             <TextValidator
-              value={this.state.newName}
+              value={this.state.newColorName}
+              name="newColorName"
               onChange={this.handleChange}
               validators={['required', 'isColorNameUnique', 'isColorUnique']}
               errorMessages={[

@@ -9,20 +9,38 @@ import { generatePalette } from './defaultColors/colorHelpers.js';
 import { Route, Switch } from 'react-router-dom';
 
 class App extends Component {
+  state = {
+    palettes: seedColors
+  };
   findPalette = id => {
-    return seedColors.find(palette => {
+    return this.state.palettes.find(palette => {
       return palette.id === id;
     });
+  };
+  savePalette = newPalette => {
+    this.setState(st => ({
+      palettes: [...st.palettes, newPalette]
+    }));
   };
   render() {
     return (
       <Switch>
-        <Route exact path="/palette/new" render={() => <NewPaletteForm />} />
+        <Route
+          exact
+          path="/palette/new"
+          render={routeProps => (
+            <NewPaletteForm
+              savePalette={this.savePalette}
+              {...routeProps}
+              palettes={this.state.palettes}
+            />
+          )}
+        />
         <Route
           exact
           path="/"
           render={routeProps => (
-            <PaletteList palettes={seedColors} {...routeProps} />
+            <PaletteList palettes={this.state.palettes} {...routeProps} />
           )}
         />
         <Route
@@ -49,10 +67,6 @@ class App extends Component {
         />
         } />
       </Switch>
-
-      // <div className="App">
-      //   <Palette palette={generatePalette(seedColors[4])} />
-      // </div>
     );
   }
 }
