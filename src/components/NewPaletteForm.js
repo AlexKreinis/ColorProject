@@ -1,26 +1,26 @@
-import React, { Component } from 'react';
-import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Button from '@material-ui/core/Button';
-import DraggableColorList from './DragableColorList';
-import { arrayMove } from 'react-sortable-hoc';
-import PaletteFormNav from './PaletteFormNav.js';
-import ColorPickerForm from './ColorPickerForm';
-import PaletteDialogForm from './PaletteDialogForm.js';
+import React, { Component } from "react";
+import classNames from "classnames";
+import { withStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import Button from "@material-ui/core/Button";
+import DraggableColorList from "./DragableColorList";
+import { arrayMove } from "react-sortable-hoc";
+import PaletteFormNav from "./PaletteFormNav.js";
+import ColorPickerForm from "./ColorPickerForm";
+import PaletteDialogForm from "./PaletteDialogForm.js";
 
 const drawerWidth = 400;
 
 const styles = theme => ({
   root: {
-    display: 'flex'
+    display: "flex"
   },
   hide: {
-    display: 'none'
+    display: "none"
   },
   drawer: {
     width: drawerWidth,
@@ -28,46 +28,46 @@ const styles = theme => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    display: 'flex',
-    alignItems: 'center'
+    display: "flex",
+    alignItems: "center"
   },
   drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 8px',
+    display: "flex",
+    alignItems: "center",
+    padding: "0 8px",
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-end'
+    justifyContent: "flex-end"
   },
   content: {
     flexGrow: 1,
-    height: 'calc(100vh - 64px)',
+    height: "calc(100vh - 64px)",
     padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
     marginLeft: -drawerWidth
   },
   contentShift: {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     }),
     marginLeft: 0
   },
   container: {
-    width: '90%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%'
+    width: "90%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%"
   },
   buttons: {
-    width: '100%'
+    width: "100%"
   },
   button: {
-    width: '50%'
+    width: "50%"
   }
 });
 
@@ -92,7 +92,7 @@ export class NewPaletteForm extends Component {
   addNewColor = newColor => {
     this.setState({
       colors: [...this.state.colors, newColor],
-      newColorName: ''
+      newColorName: ""
     });
   };
   deletePalette = name => {
@@ -108,11 +108,11 @@ export class NewPaletteForm extends Component {
   savePalette = newName => {
     const newPalette = {
       paletteName: newName,
-      id: newName.toLowerCase().replace(/ /g, '-'),
+      id: newName.toLowerCase().replace(/ /g, "-"),
       colors: this.state.colors
     };
     this.props.savePalette(newPalette);
-    this.props.history.push('/');
+    this.props.history.push("/");
   };
 
   onSortEnd = ({ oldIndex, newIndex }) => {
@@ -160,7 +160,7 @@ export class NewPaletteForm extends Component {
           </div>
           <Divider />
           <div className={classes.container}>
-            <Typography variant="h4" gutterButtom>
+            <Typography variant="h4" gutterbuttom="true">
               Design Your Palette
             </Typography>
             <div className={classes.buttons}>
