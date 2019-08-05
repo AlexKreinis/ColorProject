@@ -1,36 +1,37 @@
-import React, { Component } from "react";
-import classNames from "classnames";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import Button from "@material-ui/core/Button";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { Link } from "react-router-dom";
-import { withStyles } from "@material-ui/core/styles";
-import PaletteDialogForm from "./PaletteDialogForm.js";
+import React, { Component } from 'react';
+import classNames from 'classnames';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import Button from '@material-ui/core/Button';
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { Link } from 'react-router-dom';
+import { withStyles } from '@material-ui/core/styles';
+import PaletteDialogForm from './PaletteDialogForm.js';
 
 const drawerWidth = 400;
 
 const styles = theme => ({
   root: {
-    display: "flex"
+    display: 'flex'
   },
   appBar: {
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
-    flexDirection: "row",
-    justifyContent: "space-between",
-    height: "64px"
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '64px'
   },
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
+    transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     })
@@ -40,16 +41,19 @@ const styles = theme => ({
     marginRight: 20
   },
   navButtons: {
-    marginRight: "1rem"
+    marginRight: '1rem',
+    '& a': {
+      textDecoration: 'none'
+    }
   },
   button: {
-    margin: "0 0.5rem"
+    margin: '0 0.5rem'
   }
 });
 
 export class PaletteFormNav extends Component {
   state = {
-    newPaletteName: "",
+    newPaletteName: '',
     formShowing: false
   };
 
@@ -61,6 +65,9 @@ export class PaletteFormNav extends Component {
   };
   showForm = () => {
     this.setState({ formShowing: true });
+  };
+  hideForm = () => {
+    this.setState({ formShowing: false });
   };
   render() {
     const { open, classes, handleDrawerOpen, palettes } = this.props;
@@ -107,10 +114,11 @@ export class PaletteFormNav extends Component {
             </Button>
           </div>
         </AppBar>
-        {this.state.formShwing && (
+        {this.state.formShowing && (
           <PaletteDialogForm
             palettes={palettes}
             savePalette={this.savePalette}
+            hideForm={this.hideForm}
           />
         )}
       </div>
