@@ -11,65 +11,8 @@ import DraggableColorList from './DragableColorList';
 import { arrayMove } from 'react-sortable-hoc';
 import PaletteFormNav from './PaletteFormNav.js';
 import ColorPickerForm from './ColorPickerForm';
-
-const drawerWidth = 400;
-
-const styles = theme => ({
-  root: {
-    display: 'flex'
-  },
-  hide: {
-    display: 'none'
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    height: '100vh'
-  },
-  drawerPaper: {
-    width: drawerWidth,
-    display: 'flex',
-    alignItems: 'center'
-  },
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end'
-  },
-  content: {
-    flexGrow: 1,
-    height: 'calc(100vh - 64px)',
-    padding: theme.spacing.unit * 3,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    marginLeft: -drawerWidth
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginLeft: 0
-  },
-  container: {
-    width: '90%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  buttons: {
-    width: '100%'
-  },
-  button: {
-    width: '50%'
-  }
-});
+import styles from '../styles/NewPaletteFormStyles';
+import seedColors from '../defaultColors/seedColors.js';
 
 class NewPaletteForm extends Component {
   static defaultProps = {
@@ -78,7 +21,7 @@ class NewPaletteForm extends Component {
 
   state = {
     open: false,
-    colors: this.props.palettes[0].colors
+    colors: seedColors[0].colors
   };
 
   handleDrawerOpen = () => {
@@ -128,8 +71,18 @@ class NewPaletteForm extends Component {
   addRandomColor = e => {
     e.preventDefault();
     const allColors = this.props.palettes.map(pal => pal.colors).flat();
-    var rand = Math.floor(Math.random() * allColors.length);
-    const randomColor = allColors[rand];
+    let rand;
+    let randomColor;
+    let isDuplicateColor = true;
+    while (isDuplicateColor) {
+      console.log('entered');
+      rand = Math.floor(Math.random() * allColors.length);
+      randomColor = allColors[rand];
+      console.log(randomColor);
+      isDuplicateColor = this.state.colors.some(
+        color => color.name === randomColor.name
+      );
+    }
     this.setState({ colors: [...this.state.colors, randomColor] });
   };
   render() {
@@ -201,6 +154,7 @@ class NewPaletteForm extends Component {
             removeColor={this.deletePalette}
             axis="xy"
             onSortEnd={this.onSortEnd}
+            distance={20}
           />
         </main>
       </div>

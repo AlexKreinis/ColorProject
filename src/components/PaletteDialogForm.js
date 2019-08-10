@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -38,6 +37,7 @@ export class PaletteDialogForm extends Component {
     const { newPaletteName } = this.state;
     const palette = { name: newPaletteName, emoji: newEmoji.native };
     this.props.savePalette(palette);
+    this.setState({ stage: '' });
   };
   handleSubmit = () => {
     this.setState({ stage: 'emoji' });
